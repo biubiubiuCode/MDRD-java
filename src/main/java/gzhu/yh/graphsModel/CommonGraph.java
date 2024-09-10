@@ -26,6 +26,11 @@ public class CommonGraph extends Graph{
         super(v, e, adjMatrix, edges);
         setGraphType();
     }
+    public CommonGraph(Integer v, Integer e, List<List<Integer>> adjMatrix, List<List<Integer>> adjList,List<Pair<Integer, Integer>> edges) {
+        super(v, e, adjMatrix, edges);
+        super.setAdjList(adjList);
+        setGraphType();
+    }
     /**
      * 静态方法：根据顶点数量要求,快速随机生成一个一般图
      * @param vertexNum 顶点数
@@ -40,6 +45,7 @@ public class CommonGraph extends Graph{
         }
         Random gen = new Random();
         List<List<Integer>> adjMatrix = TwoDArrayList.createTwoDArrayList(vertexNum, vertexNum,0);
+        List<List<Integer>> adjList = TwoDArrayList.createTwoDArrayList(vertexNum);
         List<Pair<Integer,Integer>> edges = new ArrayList<>();
         for (int i = 0; i < vertexNum; i++) {
             //无向图，所以是j=i+1
@@ -54,14 +60,18 @@ public class CommonGraph extends Graph{
 //                    edges.add(new Pair<>(i, j));
 //                }
                 if (gen.nextDouble() < 0.3) {
-                    //生成边
+                    //邻接矩阵,set()替换
                     adjMatrix.get(i).set(j, 1);
                     adjMatrix.get(j).set(i, 1);
+                    //邻接表，add()追加
+                    adjList.get(i).add(j);
+                    adjList.get(j).add(i);
+
                     //往边的列表记录
                     edges.add(new Pair<Integer,Integer>(i, j));
                 }
             }
         }
-        return new CommonGraph(vertexNum, edges.size(), adjMatrix, edges);
+        return new CommonGraph(vertexNum, edges.size(), adjMatrix, adjList, edges);
     }
 }

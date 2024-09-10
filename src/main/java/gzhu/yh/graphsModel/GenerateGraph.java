@@ -30,10 +30,10 @@ public class GenerateGraph {
      * @author Administrator
      * @date 2024/9/3 0003 22:36
     */
-    public static Graph generateGraph(String graphType) {
+    public static Graph generateGraph(String graphType, int vertexNum) {
         Graph graph = null;
         Random gen = new Random();
-        int vertexNum = gen.nextInt(1000); // TODO 请设置顶点数量
+//        int vertexNum = gen.nextInt(1000); // TODO 请设置顶点数量
         switch (graphType) {
             case "BIPARTITE_GRAPH":
                 // TODO 请设置XY集合数
@@ -68,5 +68,9 @@ public class GenerateGraph {
                 throw new RuntimeException("输入的图类型有误" + graphType);
         }
         return graph;
+    }
+
+    public static String getGraphType() {
+        return new String("BIPARTITE_GRAPH; BLOCK_GRAPH; COMMON_GRAPH; GRID_GRAPH; INTERVAL_GRAPH; TREE_GRAPH;");
     }
 }

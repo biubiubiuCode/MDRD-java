@@ -7,9 +7,9 @@ package gzhu.yh.util;
  **/
 public class IsNumProper {
     public static Boolean isNumProper(int num){
-        Boolean isProper = false;
+        Boolean isProper = true;
         if (num >= 1 && num <= 1000){
-            return true;
+            return false;
         }
         return isProper;
     }

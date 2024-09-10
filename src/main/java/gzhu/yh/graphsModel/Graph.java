@@ -1,5 +1,6 @@
 package gzhu.yh.graphsModel;
 
+import gzhu.yh.util.IsNumProper;
 import gzhu.yh.util.Pair;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,7 +48,7 @@ abstract public class Graph {
     * */
     public Graph(Integer v, Integer e, List<List<Integer>> adjMatrix,  List<Pair<Integer, Integer>> edges) {
         //输入顶点数，需要判断其合理性，由于gurobi性能限制,点的数量不能太大
-        if (v.intValue() >= 1 && v.intValue() <= 1000){throw new RuntimeException("点数输入不合理，需要大于1且小于1000");}
+        if (IsNumProper.isNumProper( v.intValue() ) ){throw new RuntimeException("点数输入不合理，需要大于1且小于1000");}
         this.v = v;
         this.e = e;
         this.adjMatrix = adjMatrix;

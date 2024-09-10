@@ -17,7 +17,6 @@ public class TwoDArrayList {
      * @param initValue 初始值
      * @return java.util.ArrayList<java.util.ArrayList<T>>
      * @author Administrator
-     * @date 2024/9/3 0003 17:17
     */
     public static <T> ArrayList<List<T>> createTwoDArrayList(int row, int col, T initValue) {
         //初始化容量

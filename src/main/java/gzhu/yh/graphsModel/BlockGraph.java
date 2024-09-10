@@ -42,6 +42,11 @@ public class BlockGraph extends Graph {
         super(v, e, adjMatrix, edges);
         setGraphType();
     }
+    public BlockGraph(Integer v, Integer e, List<List<Integer>> adjMatrix,List<List<Integer>> adjList, List<Pair<Integer, Integer>> edges) {
+        super(v, e, adjMatrix, edges);
+        super.setAdjList(adjList);
+        setGraphType();
+    }
 
     /**
      * 生成一个包含vertexNum个顶点的block graph
@@ -101,7 +106,7 @@ public class BlockGraph extends Graph {
                 cutVertices.add(u);
             }
         }
-        BlockGraph blockGraph = new BlockGraph(vertexNum, edges.size(), adjMatrix, edges);
+        BlockGraph blockGraph = new BlockGraph(vertexNum, edges.size(), adjMatrix,adjList, edges);
         blockGraph.setBlocks(blocks);
         blockGraph.setCutVertices(cutVertices);
         return blockGraph;
