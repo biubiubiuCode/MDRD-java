@@ -153,10 +153,10 @@ public class ILP_MDRD_Modify_DrawingOnGraph {
 
             // 输出结果
             for (int v = 0; v < numVertices; v++) {
-                System.out.print("Vertex " + v + ": x_" + v + "_0 = " + x[v][0].get(GRB.DoubleAttr.X));
-                System.out.print(", x_" + v + "_1 = " + x[v][1].get(GRB.DoubleAttr.X));
-                System.out.print(", x_" + v + "_2 = " + x[v][2].get(GRB.DoubleAttr.X)+")");
-                System.out.println(", y_" + v + y[v].get(GRB.DoubleAttr.X));
+                System.out.print("Vertex " + v + ": x_0 = " + (int)x[v][0].get(GRB.DoubleAttr.X));
+                System.out.print(", x_1 = " + (int)x[v][1].get(GRB.DoubleAttr.X));
+                System.out.print(", x_2 = " + (int)x[v][2].get(GRB.DoubleAttr.X)+")");
+                System.out.println(", y="  + (int)y[v].get(GRB.DoubleAttr.X));
             }
 
             //System.out.println("Obj: " + model.get(GRB.DoubleAttr.ObjVal));
@@ -167,7 +167,7 @@ public class ILP_MDRD_Modify_DrawingOnGraph {
             // 创建 GraphStream 的图
             org.graphstream.graph.Graph gsGraph = new SingleGraph("Undirected Graph");
             // 设置布局算法和样式
-            gsGraph.addAttribute("ui.stylesheet", "node { fill-color: grey; size: 15px; text-size: 20px; text-color: black; } edge { fill-color: grey; }");
+            gsGraph.addAttribute("ui.stylesheet", "node { fill-color: grey; size: 15px; text-size: 10px; text-color: black; } edge { fill-color: grey; }");
 
             // 启用高质量显示
             gsGraph.addAttribute("ui.quality");
@@ -179,15 +179,16 @@ public class ILP_MDRD_Modify_DrawingOnGraph {
             for (int i = 0; i < v; i++) {
                 org.graphstream.graph.Node node = gsGraph.addNode(String.valueOf(i));
                 String label;
-                if((int)y[i].get(GRB.DoubleAttr.X)==1){label = "T";}
-                else{label = "F";}
+                if((int)y[i].get(GRB.DoubleAttr.X)==1){label = ", T";}
+//                else{label = "F";}
+                else{label = "";}
                 // 为每个节点添加编号作为标签，加上gurobi计算结果
                 if ((int)x[i][1].get(GRB.DoubleAttr.X) == 1){
-                    node.addAttribute("ui.label", "("+String.valueOf(i)+")"+ " 1, " +label);
+                    node.addAttribute("ui.label", "("+String.valueOf(i)+")"+ " 1 " +label);
                 } else if ((int)x[i][2].get(GRB.DoubleAttr.X) == 1) {
-                    node.addAttribute("ui.label", "("+String.valueOf(i)+")"+ " 2, " +label);
+                    node.addAttribute("ui.label", "("+String.valueOf(i)+")"+ " 2 " +label);
                 }else{
-                    node.addAttribute("ui.label", "("+String.valueOf(i)+")"+ " 0, " +label);
+                    node.addAttribute("ui.label", "("+String.valueOf(i)+")"+ " 0 " +label);
                 }
             }
             // 添加边
@@ -208,7 +209,7 @@ public class ILP_MDRD_Modify_DrawingOnGraph {
 
             // 添加注释（例如可以添加作为图的一部分显示）
             org.graphstream.graph.Node commentNode = gsGraph.addNode("comment");
-            commentNode.addAttribute("ui.label", "(i),1,T 分别为顶点编号，赋值，是否为maximal");
+            commentNode.addAttribute("ui.label", "(i),1,T 分别为顶点编号，赋值，该点闭邻域无0");
             commentNode.addAttribute("ui.style", "text-alignment: at-right; text-color: black; fill-color: rgba(255, 255, 255, 0);");
             commentNode.setAttribute("xyz", 0, v / 2.0, 0);  // 将注释节点放置在合适的地方
 

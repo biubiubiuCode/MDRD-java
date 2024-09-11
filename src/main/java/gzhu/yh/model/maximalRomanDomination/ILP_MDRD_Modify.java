@@ -142,10 +142,10 @@ public class ILP_MDRD_Modify {
 
             // 输出结果
             for (int v = 0; v < numVertices; v++) {
-                System.out.print("Vertex " + v + ": x_" + v + "_0 = " + x[v][0].get(GRB.DoubleAttr.X));
-                System.out.print(", x_" + v + "_1 = " + x[v][1].get(GRB.DoubleAttr.X));
-                System.out.print(", x_" + v + "_2 = " + x[v][2].get(GRB.DoubleAttr.X)+")");
-                System.out.print(", y_" + v + y[v].get(GRB.DoubleAttr.X));
+                System.out.print("Vertex " + v + ": x_0 = " + (int)x[v][0].get(GRB.DoubleAttr.X));
+                System.out.print(", x_1 = " + (int)x[v][1].get(GRB.DoubleAttr.X));
+                System.out.print(", x_2 = " + (int)x[v][2].get(GRB.DoubleAttr.X)+")");
+                System.out.println(", y="  + (int)y[v].get(GRB.DoubleAttr.X));
             }
 
             // 清理

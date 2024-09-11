@@ -1765,3 +1765,208 @@ Solution count 3: 6 10 14
 
 Optimal solution found (tolerance 1.00e-04)
 Best objective 6.000000000000e+00, best bound 6.000000000000e+00, gap 0.0000%
+
+Gurobi 11.0.3 (win64, Java) logging started Wed Sep 11 23:13:58 2024
+
+Set parameter Username
+Set parameter LogFile to value "src/main/java/gzhu/yh/logger/ILP_MDRD.log"
+Academic license - for non-commercial use only - expires 2025-09-02
+Gurobi Optimizer version 11.0.3 build v11.0.3rc0 (win64 - Windows 10.0 (19045.2))
+
+CPU model: Intel(R) Core(TM) i5-7300HQ CPU @ 2.50GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 4 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 139 rows, 100 columns and 392 nonzeros
+Model fingerprint: 0x65bb1042
+Variable types: 20 continuous, 80 integer (80 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+00]
+Found heuristic solution: objective 29.0000000
+Presolve removed 32 rows and 24 columns
+Presolve time: 0.00s
+Presolved: 107 rows, 76 columns, 324 nonzeros
+Variable types: 0 continuous, 76 integer (76 binary)
+Found heuristic solution: objective 20.0000000
+
+Root relaxation: objective 1.300000e+01, 45 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0      13.0000000   13.00000  0.00%     -    0s
+
+Explored 1 nodes (45 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 4 (of 4 available processors)
+
+Solution count 3: 13 20 29 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.300000000000e+01, best bound 1.300000000000e+01, gap 0.0000%
+
+Gurobi 11.0.3 (win64, Java) logging started Wed Sep 11 23:16:28 2024
+
+Set parameter Username
+Set parameter LogFile to value "src/main/java/gzhu/yh/logger/ILP_MDRD.log"
+Academic license - for non-commercial use only - expires 2025-09-02
+Gurobi Optimizer version 11.0.3 build v11.0.3rc0 (win64 - Windows 10.0 (19045.2))
+
+CPU model: Intel(R) Core(TM) i5-7300HQ CPU @ 2.50GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 4 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 139 rows, 100 columns and 392 nonzeros
+Model fingerprint: 0x41608aec
+Variable types: 20 continuous, 80 integer (80 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+00]
+Found heuristic solution: objective 22.0000000
+Presolve removed 26 rows and 22 columns
+Presolve time: 0.00s
+Presolved: 113 rows, 78 columns, 338 nonzeros
+Variable types: 0 continuous, 78 integer (78 binary)
+Found heuristic solution: objective 19.0000000
+
+Root relaxation: objective 1.210000e+01, 67 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0   12.10000    0   24   19.00000   12.10000  36.3%     -    0s
+H    0     0                      13.0000000   12.10000  6.92%     -    0s
+     0     0   12.10000    0   24   13.00000   12.10000  6.92%     -    0s
+
+Explored 1 nodes (68 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 4 (of 4 available processors)
+
+Solution count 3: 13 19 22 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.300000000000e+01, best bound 1.300000000000e+01, gap 0.0000%
+
+Gurobi 11.0.3 (win64, Java) logging started Wed Sep 11 23:17:54 2024
+
+Set parameter Username
+Set parameter LogFile to value "src/main/java/gzhu/yh/logger/ILP_MDRD.log"
+Academic license - for non-commercial use only - expires 2025-09-02
+Gurobi Optimizer version 11.0.3 build v11.0.3rc0 (win64 - Windows 10.0 (19045.2))
+
+CPU model: Intel(R) Core(TM) i5-7300HQ CPU @ 2.50GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 4 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 139 rows, 100 columns and 392 nonzeros
+Model fingerprint: 0xd044a46a
+Variable types: 20 continuous, 80 integer (80 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+00]
+Found heuristic solution: objective 27.0000000
+Presolve removed 29 rows and 23 columns
+Presolve time: 0.00s
+Presolved: 110 rows, 77 columns, 331 nonzeros
+Variable types: 0 continuous, 77 integer (77 binary)
+Found heuristic solution: objective 20.0000000
+
+Root relaxation: objective 1.200000e+01, 57 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0      12.0000000   12.00000  0.00%     -    0s
+
+Explored 1 nodes (57 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 4 (of 4 available processors)
+
+Solution count 3: 12 20 27 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.200000000000e+01, best bound 1.200000000000e+01, gap 0.0000%
+
+Gurobi 11.0.3 (win64, Java) logging started Wed Sep 11 23:19:26 2024
+
+Set parameter Username
+Set parameter LogFile to value "src/main/java/gzhu/yh/logger/ILP_MDRD.log"
+Academic license - for non-commercial use only - expires 2025-09-02
+Gurobi Optimizer version 11.0.3 build v11.0.3rc0 (win64 - Windows 10.0 (19045.2))
+
+CPU model: Intel(R) Core(TM) i5-7300HQ CPU @ 2.50GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 4 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 139 rows, 100 columns and 392 nonzeros
+Model fingerprint: 0xd926df95
+Variable types: 20 continuous, 80 integer (80 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+00]
+Found heuristic solution: objective 26.0000000
+Presolve removed 23 rows and 21 columns
+Presolve time: 0.00s
+Presolved: 116 rows, 79 columns, 345 nonzeros
+Variable types: 0 continuous, 79 integer (79 binary)
+Found heuristic solution: objective 20.0000000
+
+Root relaxation: objective 1.200000e+01, 49 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0   12.00000    0    9   20.00000   12.00000  40.0%     -    0s
+H    0     0                      13.0000000   12.00000  7.69%     -    0s
+H    0     0                      12.0000000   12.00000  0.00%     -    0s
+     0     0   12.00000    0    9   12.00000   12.00000  0.00%     -    0s
+
+Explored 1 nodes (77 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 4 (of 4 available processors)
+
+Solution count 4: 12 13 20 26 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.200000000000e+01, best bound 1.200000000000e+01, gap 0.0000%
+
+Gurobi 11.0.3 (win64, Java) logging started Wed Sep 11 23:20:19 2024
+
+Set parameter Username
+Set parameter LogFile to value "src/main/java/gzhu/yh/logger/ILP_MDRD.log"
+Academic license - for non-commercial use only - expires 2025-09-02
+Gurobi Optimizer version 11.0.3 build v11.0.3rc0 (win64 - Windows 10.0 (19045.2))
+
+CPU model: Intel(R) Core(TM) i5-7300HQ CPU @ 2.50GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 4 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 139 rows, 100 columns and 392 nonzeros
+Model fingerprint: 0x3c4e8ccf
+Variable types: 20 continuous, 80 integer (80 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+00]
+Found heuristic solution: objective 25.0000000
+Presolve removed 35 rows and 25 columns
+Presolve time: 0.00s
+Presolved: 104 rows, 75 columns, 317 nonzeros
+Variable types: 0 continuous, 75 integer (75 binary)
+Found heuristic solution: objective 20.0000000
+
+Root relaxation: objective 1.300000e+01, 44 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0      13.0000000   13.00000  0.00%     -    0s
+
+Explored 1 nodes (44 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 4 (of 4 available processors)
+
+Solution count 3: 13 20 25 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.300000000000e+01, best bound 1.300000000000e+01, gap 0.0000%

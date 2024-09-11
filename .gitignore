@@ -31,6 +31,13 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+###排除kelinkong/GraphWiz的c++源码###
+
+### git rm -r --cached src/main/c++/ ###
+**/c++/
+src/main/c++/
+
+
 ### VS Code ###
 .vscode/
 
