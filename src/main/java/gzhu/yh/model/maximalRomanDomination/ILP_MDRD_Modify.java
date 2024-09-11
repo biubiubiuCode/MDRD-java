@@ -35,11 +35,6 @@ public class ILP_MDRD_Modify {
             // 获取图的属性
             int numVertices = graph.getV(); // 顶点数
             List<List<Integer>> adjMatrix = graph.getAdjMatrix(); // 邻接矩阵
-            //MDRD的ILP需要先求各个顶点的度
-            int[] deg = new int[numVertices];
-            for (int i = 0; i < numVertices; i++) {
-                deg[i]=graph.getAdjList().get(i).size();
-            }
 
             // 定义变量
             GRBVar[][] x = new GRBVar[numVertices][3]; // 0: x_v^0, 1: x_v^1, 2: x_v^2
@@ -52,52 +47,86 @@ public class ILP_MDRD_Modify {
                 y[v] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "y_" + v);
             }
 
-            // 每个顶点只能有一个赋值
+            // 约束1：每个顶点只能被赋值为0、1或2其中的一个
+            // x0_v + x1_v + x2_v=0
             for (int v = 0; v < numVertices; v++) {
-                GRBLinExpr vars = new GRBLinExpr();
-                vars.addTerm(1.0, x[v][0]);
-                vars.addTerm(1.0, x[v][1]);
-                vars.addTerm(1.0, x[v][2]);
-                model.addConstr(vars, GRB.EQUAL, 1.0,"每个顶点只能有一个赋值");
+                GRBLinExpr constraint1 = new GRBLinExpr();
+                constraint1.addTerm(1.0, x[v][0]);
+                constraint1.addTerm(1.0, x[v][1]);
+                constraint1.addTerm(1.0, x[v][2]);
+                model.addConstr(constraint1, GRB.EQUAL, 1.0,"约束1：每个顶点只能被赋值为0、1或2其中的一个");
             }
 
-            // 赋值为0的顶点必须连接到至少一个赋值为2的顶点
+            // 约束2：赋值为0的顶点至少有一个邻接点赋值为2
+            // x0_v <= sum(x2_u) for u in N(v)
             for (int v = 0; v < numVertices; v++) {
-                GRBLinExpr sum = new GRBLinExpr();
+                GRBLinExpr constraint2 = new GRBLinExpr();
                 for (int u = 0; u < numVertices; u++) {
                     if (adjMatrix.get(v).get(u) == 1) {
-                        sum.addTerm(1.0, x[u][2]);
+                        constraint2.addTerm(1.0, x[u][2]);
                     }
                 }
-                model.addConstr(x[v][0], GRB.LESS_EQUAL, sum,"赋值为0的顶点必须连接到至少一个赋值为2的顶点");
+                model.addConstr(x[v][0], GRB.LESS_EQUAL, constraint2,"约束2：赋值为0的顶点至少有一个邻接点赋值为2");
             }
 
-            // 不被V0控制的点的性质
-            for (int w = 0; w < numVertices; w++) {
-                GRBLinExpr sum = new GRBLinExpr();
-                for (int u = 0; u < numVertices; u++) {
-                    if (adjMatrix.get(w).get(u) == 1) {
-                        sum.addTerm(1.0, x[u][0]);
+            // 约束3：辅助变量 y 的约束，确保不受0控制的，顶点 v 的邻域中没有顶点被赋值为0。
+            // y_v >= x1_v + x2_v - sum(x0_u) for u in N(v)
+            for (int i = 0; i < numVertices; i++) {
+                GRBLinExpr constraint3 = new GRBLinExpr();
+                constraint3.addTerm(1.0,x[i][1]);
+                constraint3.addTerm(1.0,x[i][2]);
+                for (int j = 0; j < numVertices; j++) {
+                    if(adjMatrix.get(i).get(j) ==1){
+                        constraint3.addTerm(-1.0,x[j][0]);
                     }
                 }
-                GRBLinExpr left = new GRBLinExpr();
-                left.addTerm(1.0, x[w][1]);
-                left.addTerm(1.0, x[w][2]);
-                model.addConstr(left, GRB.GREATER_EQUAL, y[w],"不被V0控制的点的性质1");
-
-                GRBLinExpr right = new GRBLinExpr();
-                right.addConstant(deg[w]);
-                right.addTerm(-1*deg[w], y[w]);
-//                model.addConstr(sum, GRB.LESS_EQUAL, (1 - y[w]) * deg[w]);
-                model.addConstr(sum, GRB.LESS_EQUAL, right,"不被V0控制的点的性质2");
+                model.addConstr(y[i], GRB.GREATER_EQUAL, constraint3,"辅助变量 y 的约束，确保不受0控制的，顶点 v 的邻域中没有顶点被赋值为0");
             }
 
-            // 至少有一个不被V0控制的点
-            GRBLinExpr sum_y = new GRBLinExpr();
-            for (int w = 0; w < numVertices; w++) {
-                sum_y.addTerm(1.0, y[w]);
+            // 约束4：当顶点 v 被赋值为0时，y_v必须为0
+            // y_v <= 1 - x0_v
+            for (int i = 0; i < numVertices; i++) {
+                GRBLinExpr constraint4 = new GRBLinExpr();
+                constraint4.addTerm(1.0,y[i]);
+                constraint4.addTerm(1.0,x[i][0]);
+
+                model.addConstr(constraint4, GRB.LESS_EQUAL, 1,"当顶点 v 被赋值为0时，y_v必须为0");
             }
-            model.addConstr(sum_y, GRB.GREATER_EQUAL, 1,"至少有一个不被0控制的点");
+            // 约束5: 如果顶点 v 的邻域中有顶点被赋值为0，则 y_v 必须为0
+            // y_v <= 1 - max(x0_u) for u in N(v)
+            /*for (int i = 0; i < numVertices; i++) {
+                GRBLinExpr maxConstraint = new GRBLinExpr();
+                for (int j = 0; j < numVertices; j++) {
+                    if(adjMatrix.get(i).get(j) ==1){
+                        maxConstraint.addTerm(1.0,x[j][0]);
+                    }
+                }
+                model.addConstr(y[i], GRB.GREATER_EQUAL, 1-maxConstraint,"辅助变量 y 的约束，确保不受0控制的，顶点 v 的邻域中没有顶点被赋值为0");
+            }*/
+            //模拟max()函数
+            for (int i = 0; i < numVertices; i++) {
+                GRBVar maxVal = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "maxVal");
+                for (int j = 0; j < numVertices; j++) {
+                    if(adjMatrix.get(i).get(j) ==1){
+                        model.addConstr(maxVal, GRB.GREATER_EQUAL,x[j][0],"取邻点u的x[u][0]的最大值");
+                    }
+                }
+                GRBLinExpr constraint5 = new GRBLinExpr();
+                constraint5.addTerm(1.0,maxVal);
+                constraint5.addTerm(1.0,y[i]);
+                model.addConstr(constraint5, GRB.LESS_EQUAL, 1,"辅助变量 y 的约束，确保不受0控制的，顶点 v 的邻域中没有顶点被赋值为0");
+            }
+            // 约束6: 至少有一个顶点被赋值为1或2，且其邻域内没有赋值为0的顶点
+            // 1 <= sum((x1_v + x1_v) * y_v) for u in N(v)
+            // 1 <= sum(y_v)
+
+            GRBLinExpr constraint6 = new GRBLinExpr();
+            for (int i = 0; i < numVertices; i++) {
+//                constraint6.addTerm(x[i][1].get(GRB.DoubleAttr.X), y[i]);
+//                constraint6.addTerm(x[i][2].get(GRB.DoubleAttr.X), y[i]);
+                constraint6.addTerm(1.0, y[i]);
+            }
+            model.addConstr(constraint6, GRB.GREATER_EQUAL, 1,"至少有一个不被0控制的点");
 
             // 目标函数：最小化赋值总和
             GRBLinExpr objective = new GRBLinExpr();
