@@ -8,7 +8,7 @@
 - 使用项目内的模型进行计算，目前可以求解标准控制集问题、独立集问题、顶点覆盖问题、完美双罗马控制集问题，模型可以保存为LP文件。
 - 展示计算结果：最优解、每个变量的取值
 - 
-![img_1.png](img_1.png)
+![img_1.png](main/java/gzhu/yh/img_1.png)
 # 2. 本分支版本的介绍
 本项目分支基于**kelinkong/GraphWiz**进行重构与修改。是一个基于java 与 gurobi 的图计算工具，支持生成图、设计LP文件求解图的一些问题、使用项目内的模型进行计算、展示计算结果等功能。
 ## 2.1 功能
@@ -50,9 +50,9 @@
 
 ```
 ## 2.3 一些继承关系
-![img_3.png](img_3.png)
+![img_3.png](main/java/gzhu/yh/img_3.png)
 
-![img_2.png](img_2.png)
+![img_2.png](main/java/gzhu/yh/img_2.png)
 
 # 3. 使用说明：
 
