@@ -1678,3 +1678,90 @@ Solution count 3: 8 10 11
 
 Optimal solution found (tolerance 1.00e-04)
 Best objective 8.000000000000e+00, best bound 8.000000000000e+00, gap 0.0000%
+
+Gurobi 11.0.3 (win64, Java) logging started Wed Sep 11 17:54:20 2024
+
+Set parameter Username
+Set parameter LogFile to value "src/main/java/gzhu/yh/logger/ILP_MDRD.log"
+Academic license - for non-commercial use only - expires 2025-09-02
+Gurobi Optimizer version 11.0.3 build v11.0.3rc0 (win64 - Windows 10.0 (19045.2))
+
+CPU model: Intel(R) Core(TM) i5-7300HQ CPU @ 2.50GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 4 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 69 rows, 50 columns and 192 nonzeros
+Model fingerprint: 0x447050db
+Variable types: 10 continuous, 40 integer (40 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+00]
+Found heuristic solution: objective 13.0000000
+Presolve removed 16 rows and 12 columns
+Presolve time: 0.00s
+Presolved: 53 rows, 38 columns, 158 nonzeros
+Variable types: 0 continuous, 38 integer (38 binary)
+Found heuristic solution: objective 10.0000000
+
+Root relaxation: objective 7.000000e+00, 30 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    7.00000    0   16   10.00000    7.00000  30.0%     -    0s
+H    0     0                       8.0000000    7.00000  12.5%     -    0s
+
+Cutting planes:
+  Zero half: 1
+  RLT: 2
+
+Explored 1 nodes (36 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 4 (of 4 available processors)
+
+Solution count 3: 8 10 13 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 8.000000000000e+00, best bound 8.000000000000e+00, gap 0.0000%
+
+Gurobi 11.0.3 (win64, Java) logging started Wed Sep 11 17:54:56 2024
+
+Set parameter Username
+Set parameter LogFile to value "src/main/java/gzhu/yh/logger/ILP_MDRD.log"
+Academic license - for non-commercial use only - expires 2025-09-02
+Gurobi Optimizer version 11.0.3 build v11.0.3rc0 (win64 - Windows 10.0 (19045.2))
+
+CPU model: Intel(R) Core(TM) i5-7300HQ CPU @ 2.50GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 4 physical cores, 4 logical processors, using up to 4 threads
+
+Optimize a model with 81 rows, 50 columns and 240 nonzeros
+Model fingerprint: 0xe8e0cc48
+Variable types: 10 continuous, 40 integer (40 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 2e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+00]
+Found heuristic solution: objective 14.0000000
+Presolve removed 10 rows and 10 columns
+Presolve time: 0.00s
+Presolved: 71 rows, 40 columns, 220 nonzeros
+Variable types: 0 continuous, 40 integer (40 binary)
+Found heuristic solution: objective 10.0000000
+
+Root relaxation: objective 5.200000e+00, 39 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    5.20000    0   31   10.00000    5.20000  48.0%     -    0s
+H    0     0                       6.0000000    5.20000  13.3%     -    0s
+     0     0    5.20000    0   31    6.00000    5.20000  13.3%     -    0s
+
+Explored 1 nodes (40 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 4 (of 4 available processors)
+
+Solution count 3: 6 10 14 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 6.000000000000e+00, best bound 6.000000000000e+00, gap 0.0000%

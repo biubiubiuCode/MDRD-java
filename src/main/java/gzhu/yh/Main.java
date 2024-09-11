@@ -24,11 +24,11 @@ public class Main {
         System.out.println("目前支持的graph类型有："+GenerateGraph.getGraphType());
         //BIPARTITE_GRAPH; BLOCK_GRAPH; COMMON_GRAPH; GRID_GRAPH; INTERVAL_GRAPH; TREE_GRAPH;
 //        Graph graph= GenerateGraph.generateGraph("BIPARTITE_GRAPH",vertexNum);
-//        Graph graph= GenerateGraph.generateGraph("BLOCK_GRAPH",vertexNum);
+        Graph graph= GenerateGraph.generateGraph("BLOCK_GRAPH",vertexNum);
 //        Graph graph= GenerateGraph.generateGraph("COMMON_GRAPH",vertexNum);
 //        Graph graph= GenerateGraph.generateGraph("GRID_GRAPH",vertexNum);
 //        Graph graph= GenerateGraph.generateGraph("INTERVAL_GRAPH",vertexNum);
-        Graph graph= GenerateGraph.generateGraph("TREE_GRAPH",vertexNum);
+//        Graph graph= GenerateGraph.generateGraph("TREE_GRAPH",vertexNum);
 
         //绘制所生成的图
 //        DrawingGraph.visualizeGraphGraphStream(graph);
