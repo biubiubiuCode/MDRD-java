@@ -1970,6 +1970,7 @@ Solution count 3: 13 20 25
 
 Optimal solution found (tolerance 1.00e-04)
 Best objective 1.300000000000e+01, best bound 1.300000000000e+01, gap 0.0000%
+<<<<<<< HEAD
 
 Gurobi 11.0.3 (win64, Java) logging started Mon Nov 25 16:48:46 2024
 
@@ -2024,3 +2025,5 @@ Solution count 3: 12 20 25
 
 Optimal solution found (tolerance 1.00e-04)
 Best objective 1.200000000000e+01, best bound 1.200000000000e+01, gap 0.0000%
+=======
+>>>>>>> 87d90ed54f0d8f9808149bb81fefec4c631bf5c4
