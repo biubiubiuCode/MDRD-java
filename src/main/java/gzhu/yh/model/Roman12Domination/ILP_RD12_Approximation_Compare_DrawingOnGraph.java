@@ -1,0 +1,238 @@
+package gzhu.yh.model.Roman12Domination;
+
+import com.gurobi.gurobi.*;
+import gzhu.yh.graphsModel.Graph;
+import gzhu.yh.model.independentRoman2Domination.ApproximationAlgorithm_IR2D;
+import gzhu.yh.util.Pair;
+import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.ui.view.Viewer;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author wendao
+ * @since 2024-09-04
+ * //
+ * <p>
+ * maxiaml roman domiation的ILP方程
+ *      varialble:
+ *          x0_v, x1_v, x2_v 是三种赋值状态的二元变量。v赋值分别为0，1，2时等于1表示.否则为0
+ *          y[i] 是辅助变量，用于检测是否满足特定条件。表示顶点v是否被满足了条件 "其闭邻域内没有赋值为 0"
+ *      minumum: x1_v + 2 * x2_v
+ *      subject to:for v in V
+ *      x0_v + x1_v + x2_v=0
+ *      x0_v <= sum(x2_u) for u in N(v)
+ *      y_v >= x1_v + x2_v - sum(x0_u) for u in N(v)
+ *      y_v <= 1 - x0_v
+ *      y_v <= 1 - max(x0_u) for u in N(v)  //当邻域有0， max(x0_u)=1, 否则为0
+ *      1 <= sum((x1_v + x1_v) * y_v) for u in N(v)
+ *
+ **/
+public class ILP_RD12_Approximation_Compare_DrawingOnGraph {
+    public static void ILP_RD12_DrawingOnGraph(Graph graph){
+
+        //输出文件的路径
+        String resultFileName = "C:\\Users\\Administrator\\Desktop\\IR12D_Result.txt";
+        try {
+            // 创建环境
+            GRBEnv env = new GRBEnv(true);
+            env.set("logFile", "src/main/java/gzhu/yh/logger/ILP_RD12.log"); //设置日志文件
+            env.start();
+
+            // 创建模型
+            GRBModel model = new GRBModel(env);
+            model.set(GRB.StringAttr.ModelName, "ILP_RD12");
+            // 获取图的属性
+            int numVertices = graph.getV(); // 顶点数
+            List<List<Integer>> adjMatrix = graph.getAdjMatrix(); // 邻接矩阵
+
+            // 定义变量
+            GRBVar[][] x = new GRBVar[numVertices][3]; // 0: x_v^0, 1: x_v^1, 2: x_v^2
+
+            for (int v = 0; v < numVertices; v++) {
+                x[v][0] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "x_" + v + "_0");
+                x[v][1] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "x_" + v + "_1");
+                x[v][2] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "x_" + v + "_2");
+            }
+
+            // 约束1：每个顶点只能被赋值为0、1或2其中的一个
+            // x0_v + x1_v + x2_v=0
+            for (int v = 0; v < numVertices; v++) {
+                GRBLinExpr constraint1 = new GRBLinExpr();
+                constraint1.addTerm(1.0, x[v][0]);
+                constraint1.addTerm(1.0, x[v][1]);
+                constraint1.addTerm(1.0, x[v][2]);
+                model.addConstr(constraint1, GRB.EQUAL, 1.0,"约束1：每个顶点只能被赋值为0、1或2其中的一个");
+            }
+
+            // 约束2：赋值为0的顶点至少有一个邻接点赋值为2
+            // x0_v <= sum(x2_u) for u in N(v)
+            for (int v = 0; v < numVertices; v++) {
+                GRBLinExpr constraint2 = new GRBLinExpr();
+                for (int u = 0; u < numVertices; u++) {
+                    if (adjMatrix.get(v).get(u) == 1) {
+                        constraint2.addTerm(1.0, x[u][2]);
+                    }
+                }
+                model.addConstr(x[v][0], GRB.LESS_EQUAL, constraint2,"约束2：赋值为0的顶点至少有一个邻接点赋值为2");
+            }
+
+            //RD12的ILP需要一个充分大的整数
+            int M = 100000;//TODO 理论上为Integer.MAX_VALUE.鉴于点数没超过1000，M值取100 000
+            // 约束3：赋值为0的顶点至多有2个邻接点赋值为2
+            // x0_v <= sum(x2_u) for u in N(v)  sum(x2_u) <= 2 + M(1-x0_v) for u in N(v)  M为一个充分大的整数
+            for (int v = 0; v < numVertices; v++) {
+                GRBLinExpr constraint2 = new GRBLinExpr();
+                for (int u = 0; u < numVertices; u++) {
+                    if (adjMatrix.get(v).get(u) == 1) {
+                        constraint2.addTerm(1.0, x[u][2]);
+                    }
+                }
+//                GRBLinExpr constraint3 = new GRBLinExpr();
+//                constraint3.addTerm(-1.0 * M, x[v][0]);
+                constraint2.addTerm(M,x[v][0]);
+//                model.addConstr(constraint2 - constraint3 , GRB.LESS_EQUAL,2 + M ,"约束2：赋值为0的顶点至少有一个邻接点赋值为2");
+                model.addConstr(constraint2 , GRB.LESS_EQUAL,2 + M ,"约束3：赋值为0的顶点至多有2个邻接点赋值为2");
+            }
+
+
+
+
+            // 目标函数：最小化赋值总和
+            GRBLinExpr objective = new GRBLinExpr();
+            for (int v = 0; v < numVertices; v++) {
+                objective.addTerm(0.0, x[v][0]);
+                objective.addTerm(1.0, x[v][1]);
+                objective.addTerm(2.0, x[v][2]);
+            }
+            model.setObjective(objective, GRB.MINIMIZE);
+
+            // 优化模型
+            model.optimize();
+
+            // 输出结果
+          /*  for (int v = 0; v < numVertices; v++) {
+                System.out.print("Vertex " + v + ": x_0 = " + (int)x[v][0].get(GRB.DoubleAttr.X));
+                System.out.print(", x_1 = " + (int)x[v][1].get(GRB.DoubleAttr.X));
+                System.out.print(", x_2 = " + (int)x[v][2].get(GRB.DoubleAttr.X)+")");
+            }*/
+
+
+            /*输出结果*/
+            //ILP计算结果
+            int accurateCount=0;
+            for (int v = 0; v < numVertices; v++) {
+                accurateCount+= (int)x[v][1].get(GRB.DoubleAttr.X) + (int)x[v][2].get(GRB.DoubleAttr.X)*2;
+            }
+            System.out.println("gurobi 计算结果是 " + accurateCount);
+
+
+            //近似算法计算结果
+            //调用近似算法
+            Map<Integer, Integer> appr = ApproximationAlgorithm_IR2D.roman12Domination(graph);
+            int apprCost = appr.values().stream().mapToInt(Integer::intValue).sum();
+            System.out.println("近似算法顶点赋值总成本: " + apprCost);
+
+            //近似比结果
+            double raito = apprCost/(double)accurateCount;
+            System.out.println("近似比="+ raito);
+
+            Integer DELTA =0;
+            for (List<Integer> list : graph.getAdjList()) {
+                if(list.size()>=DELTA){
+                    DELTA= list.size();
+                }
+            }
+            System.out.println("理论近似比="+ Math.log(DELTA));
+//            System.out.println("Obj: " + model.get(GRB.DoubleAttr.ObjVal));
+//            System.out.println("Runtime: " + model.get(GRB.DoubleAttr.Runtime));
+
+            // 创建文件对象
+            File file = new File(resultFileName);
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file,true)); // true 表示追加模式
+
+            if (file.exists()) {
+                writer.newLine(); // 文件已存在时，换行再追加内容
+            }
+
+            writer.write("图的类型为：" + graph.getGraphType() + "; 顶点数为 " + graph.getV()  + "\t ");
+            writer.newLine();  // 换行
+
+            writer.write("gurobi 计算结果是 " + accurateCount + "\t " +
+                    "近似算法顶点赋值总成本: " + apprCost + "\t " +
+                    "理论近似比=" + Math.log(DELTA)+ "\t "+
+                    "实际近似比="+ raito +"\t"
+            );
+
+            if (raito > Math.log(DELTA)){
+                writer.write("False");
+            }
+        /*    //画图
+            // 创建 GraphStream 的图
+            org.graphstream.graph.Graph gsGraph = new SingleGraph("Undirected Graph");
+            // 设置布局算法和样式
+            gsGraph.addAttribute("ui.stylesheet", "node { fill-color: grey; size: 15px; text-size: 10px; text-color: black; } edge { fill-color: grey; }");
+
+            // 启用高质量显示
+            gsGraph.addAttribute("ui.quality");
+            gsGraph.addAttribute("ui.antialias");
+
+
+            int v= graph.getV();
+            // 添加顶点
+            for (int i = 0; i < v; i++) {
+                org.graphstream.graph.Node node = gsGraph.addNode(String.valueOf(i));
+
+
+                // 为每个节点添加编号作为标签，加上gurobi计算结果
+                if ((int)x[i][1].get(GRB.DoubleAttr.X) == 1){
+                    node.addAttribute("ui.label", "("+String.valueOf(i)+")"+ " 1 ");
+                } else if ((int)x[i][2].get(GRB.DoubleAttr.X) == 1) {
+                    node.addAttribute("ui.label", "("+String.valueOf(i)+")"+ " 2 ");
+                }else{
+                    node.addAttribute("ui.label", "("+String.valueOf(i)+")"+ " 0 ");
+                }
+            }
+            // 添加边
+            for (Pair<Integer, Integer> edge : graph.getEdges()) {
+                Integer source = edge.getFirst();
+                Integer target = edge.getSecond();
+                String edgeId = source + "-" + target;
+
+                // 防止重复边
+                if (gsGraph.getEdge(edgeId) == null) {
+                    gsGraph.addEdge(edgeId, source.toString(), target.toString());
+                }
+            }
+            // 显示图形并设置窗口标题
+//           gsGraph.display();
+            Viewer viewer = gsGraph.display();
+            viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.EXIT); // 设置窗口关闭策略
+
+            // 添加注释（例如可以添加作为图的一部分显示）
+            org.graphstream.graph.Node commentNode = gsGraph.addNode("comment");
+            commentNode.addAttribute("ui.label", "(i),1,T 分别为顶点编号，赋值，该点闭邻域无0");
+            commentNode.addAttribute("ui.style", "text-alignment: at-right; text-color: black; fill-color: rgba(255, 255, 255, 0);");
+            commentNode.setAttribute("xyz", 0, v / 2.0, 0);  // 将注释节点放置在合适的地方
+
+*/
+            // 清理
+            model.dispose();
+            env.dispose();
+            writer.flush();
+            writer.close();
+        } catch (GRBException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("写入文件时出错: " + e.getMessage());
+        }
+    }
+
+}
