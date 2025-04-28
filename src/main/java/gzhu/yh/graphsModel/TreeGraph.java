@@ -47,11 +47,10 @@ public class TreeGraph extends Graph{
         List<List<Integer>> adjMatrix = TwoDArrayList.createTwoDArrayList(vertexNum, vertexNum,0);
         List<List<Integer>> adjList = TwoDArrayList.createTwoDArrayList(vertexNum);
         List<Pair<Integer,Integer>> edges = new ArrayList<>();
-<<<<<<< HEAD
+
 
 //        List<Integer> vertices = new ArrayList<>(vertexNum);
-=======
->>>>>>> 87d90ed54f0d8f9808149bb81fefec4c631bf5c4
+
         //从第二个点开始随机取parent
         for (int i = 1; i < vertexNum; i++) {
             //随机取parent
