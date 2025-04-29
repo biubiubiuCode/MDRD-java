@@ -6,12 +6,16 @@ import com.gurobi.gurobi.GRBException;
 import com.gurobi.gurobi.GRBLinExpr;
 import com.gurobi.gurobi.GRBModel;
 import com.gurobi.gurobi.GRBVar;
+import gzhu.yh.annotation.LogExecutionTime;
 import gzhu.yh.graphsModel.Graph;
 import gzhu.yh.model.independentRoman2Domination.ApproximationAlgorithm_IR2D;
 import gzhu.yh.model.maximalRomanDomination.algorithm.GreedyMRDF;
 import gzhu.yh.util.Pair;
+import gzhu.yh.util.SpringContextUtil;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.view.Viewer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -74,7 +78,10 @@ import java.util.Map;
             &\text{（至少一个自立点）}
         \end{align}
  **/
+@Service
 public class ILP_MDRD_New {
+    @Autowired
+    private GreedyMRDF greedyMRDF;
     public static void ILP_MDRD_DrawingOnGraph(Graph graph){
         try {
             // 创建环境
@@ -264,12 +271,15 @@ public class ILP_MDRD_New {
             e.printStackTrace();
         }
     }
+
+    @LogExecutionTime
     public static void ILP_MDRD_Apprximate(Graph graph){
         //输出文件的路径
         String resultFileName = "C:\\Users\\Administrator\\Desktop\\MDRD_Approximate_Result.txt";
         try {
             // 创建环境
             GRBEnv env = new GRBEnv(true);
+            env.set(GRB.IntParam.OutputFlag, 0); // 设置不输出信息到控制台
             env.set("logFile", "src/main/java/gzhu/yh/logger/ILP_MDRD.log"); //设置日志文件
             env.start();
 
@@ -401,14 +411,15 @@ public class ILP_MDRD_New {
             for (int v = 0; v < numVertices; v++) {
                 accurateCount+= (int)x[v][1].get(GRB.DoubleAttr.X) + (int)x[v][2].get(GRB.DoubleAttr.X)*2;
             }
-            System.out.println("gurobi 计算结果是 " + accurateCount);
+            System.out.print("gurobi 计算结果是 " + accurateCount+ "\t");
 
 
             //近似算法计算结果
             //调用近似算法
-            int[] f = GreedyMRDF.greedySolve(graph);
+            GreedyMRDF greedyMRDF = SpringContextUtil.getBean(GreedyMRDF.class);
+            int[] f = greedyMRDF.greedySolve(graph);
             int apprCost = Arrays.stream(f).sum();
-            System.out.println("近似算法顶点赋值总成本: " + apprCost);
+            System.out.print("近似算法顶点赋值总成本: " + apprCost + "\t");
 
             //近似比结果
             double raito = apprCost/(double)accurateCount;

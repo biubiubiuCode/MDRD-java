@@ -3,7 +3,9 @@ package gzhu.yh.model.maximalRomanDomination.algorithm;
 /**
  * @author wendao
  **/
+import gzhu.yh.annotation.LogExecutionTime;
 import gzhu.yh.graphsModel.Graph;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.*;
@@ -17,6 +19,7 @@ import java.util.*;
  * Usage:
  *   Read a graph into a GreedyMRDF.Graph, then call greedySolve() to get f: V-> {0,1,2}.
  */
+@Service
 public class GreedyMRDF {
 
     /**
@@ -29,7 +32,8 @@ public class GreedyMRDF {
      * 保证自立性：检查是否已有一个f(v)=1
      *   若f(v)>=1(实际上必为2) 且其邻居均非 0 的顶点，则已经满足；若没有，则选一个最小度顶点设为 1，并对其邻居中仍为 0 的点全部赋值为 1。
      */
-    public static int[] greedySolve(Graph g) {
+    @LogExecutionTime
+    public int[] greedySolve(Graph g) {
         int n = g.getV();
         int[] f = new int[n];             // f[v] = 0,1,2 assignment
         boolean[] covered = new boolean[n];
