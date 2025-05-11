@@ -37,8 +37,8 @@ public class Main implements CommandLineRunner {
         int vertexNum =6;
         //vertexNum = gen.nextInt(20); // TODO 请设置顶点数量
         System.out.println("目前支持的graph类型有："+GenerateGraph.getGraphType());
-        //BIPARTITE_GRAPH; BLOCK_GRAPH; COMMON_GRAPH; GRID_GRAPH; INTERVAL_GRAPH; TREE_GRAPH;
-        String graphType = "COMMON_GRAPH";
+        //BIPARTITE_GRAPH; BLOCK_GRAPH; COMMON_GRAPH; GRID_GRAPH; INTERVAL_GRAPH; THRESHOLD_GRAPH; TREE_GRAPH;
+        String graphType = "THRESHOLD_GRAPH";
 
 
         //绘制所生成的图
@@ -48,13 +48,13 @@ public class Main implements CommandLineRunner {
  //       ILP_RD12_Modify_DrawingOnGraph.ILP_MDRD_DrawingOnGraph(graph);
 //        ILP_RD12_Modify_DrawingOnGraph.ILP_RD12_DrawingOnGraph(graph);
 
-        for (int i =500; i <= 510; i++) {
+        for (int i =300; i <= 300; i++) {
             Graph graph= GenerateGraph.generateGraph(graphType,i);
 //            ILP_RD12_Approximation_Compare_DrawingOnGraph.ILP_RD12_DrawingOnGraph(graph);
 //            ILP_MDRD_New.ILP_MDRD_Apprximate(graph);
               //近似算法
             System.out.print("图:"+graphType+" 包含顶点数为" + i+"\t " );
-            ILP_MDRD_New.ILP_MDRD_Apprximate(graph);
+            ILP_MDRD_New.ILP_MDRD_ThresholdGraph(graph);
 
 //            int sum = Arrays.stream(greedyMRDF.greedySolve(graph)).sum();
 //            System.out.println("当前顶点数量 " + i + " 的图的近似算法结果总和: " + sum);

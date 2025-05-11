@@ -60,10 +60,14 @@ public class GenerateGraph {
                 graph = TreeGraph.randomGenTreeGraphByVertexNum(vertexNum);
                 break;
 
+            case "THRESHOLD_GRAPH":
+                graph = ThresholdGraph.randomGenTresholdGraphByVertexNum(vertexNum);
+                break;
+
             default:
                 System.out.println("输入的图类型有误");
                 System.out.println(
-                        "目前支持的 graphType 有:"+ " BIPARTITE_GRAPH; BLOCK_GRAPH; COMMON_GRAPH; GRID_GRAPH; INTERVAL_GRAPH; TREE_GRAPH;"
+                        "目前支持的 graphType 有:"+ " BIPARTITE_GRAPH; BLOCK_GRAPH; COMMON_GRAPH; GRID_GRAPH; INTERVAL_GRAPH; THRESHOLD_GRAPH; TREE_GRAPH;"
                 );
                 throw new RuntimeException("输入的图类型有误" + graphType);
         }

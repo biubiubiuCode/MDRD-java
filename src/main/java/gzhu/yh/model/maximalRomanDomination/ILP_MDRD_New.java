@@ -10,6 +10,7 @@ import gzhu.yh.annotation.LogExecutionTime;
 import gzhu.yh.graphsModel.Graph;
 import gzhu.yh.model.independentRoman2Domination.ApproximationAlgorithm_IR2D;
 import gzhu.yh.model.maximalRomanDomination.algorithm.GreedyMRDF;
+import gzhu.yh.model.maximalRomanDomination.algorithm.ThresholdMRDF;
 import gzhu.yh.util.Pair;
 import gzhu.yh.util.SpringContextUtil;
 import org.graphstream.graph.implementations.SingleGraph;
@@ -455,6 +456,186 @@ public class ILP_MDRD_New {
 //            if (raito > Math.log(DELTA)){
 //                writer.write("False");
 //            }
+
+
+
+            // 清理
+            model.dispose();
+            env.dispose();
+            writer.flush();
+            writer.close();
+        } catch (GRBException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("写入文件时出错: " + e.getMessage());
+        }
+    }
+    @LogExecutionTime
+    public static void ILP_MDRD_ThresholdGraph(Graph graph){
+        //输出文件的路径
+        String resultFileName = "C:\\Users\\Administrator\\Desktop\\MDRD_ThresholdGraph_Result.txt";
+        try {
+            // 创建环境
+            GRBEnv env = new GRBEnv(true);
+            env.set(GRB.IntParam.OutputFlag, 0); // 设置不输出信息到控制台
+            env.set("logFile", "src/main/java/gzhu/yh/logger/ILP_MDRD.log"); //设置日志文件
+            env.start();
+
+            // 创建模型
+            GRBModel model = new GRBModel(env);
+            model.set(GRB.StringAttr.ModelName, "ILP_MDRD");
+            // 获取图的属性
+            int numVertices = graph.getV(); // 顶点数
+            List<List<Integer>> adjMatrix = graph.getAdjMatrix(); // 邻接矩阵
+
+            // 定义变量
+            GRBVar[][] x = new GRBVar[numVertices][3]; // 0: x_v^0, 1: x_v^1, 2: x_v^2
+            GRBVar[] y = new GRBVar[numVertices]; // 辅助变量 y_w, 当前点是否满足极大性约束
+
+            for (int v = 0; v < numVertices; v++) {
+                x[v][0] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "x_" + v + "_0");//赋值为0
+                x[v][1] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "x_" + v + "_1");//赋值为1
+                x[v][2] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "x_" + v + "_2");//赋值为2
+                y[v] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "y_" + v);//满足极大性
+            }
+
+            // 约束1：唯一赋值
+            // x0_v + x1_v + x2_v=1
+            for (int v = 0; v < numVertices; v++) {
+                GRBLinExpr constraint1 = new GRBLinExpr();
+                constraint1.addTerm(1.0, x[v][0]);
+                constraint1.addTerm(1.0, x[v][1]);
+                constraint1.addTerm(1.0, x[v][2]);
+                model.addConstr(constraint1, GRB.EQUAL, 1.0,"约束1：唯一赋值");
+            }
+
+            // 约束2：罗马约束
+            // x0_v <= \sum_{u\in N(v) x2_u}
+            for (int v = 0; v < numVertices; v++) {
+                GRBLinExpr constraint2 = new GRBLinExpr();
+                for (int u = 0; u < numVertices; u++) {
+                    if (adjMatrix.get(v).get(u) == 1) {
+                        constraint2.addTerm(1.0, x[u][2]);
+                    }
+                }
+                model.addConstr(x[v][0], GRB.LESS_EQUAL, constraint2,"约束2:罗马约束");
+            }
+            //约束合集：极大性约束描述
+            // 约束3a：极大性出自V_1
+            // y_v <= x1_v  for v in V
+            for (int v = 0; v < numVertices; v++) {
+                GRBLinExpr constraint3a = new GRBLinExpr();
+                constraint3a.addTerm(1.0,x[v][1]);
+                model.addConstr(y[v], GRB.LESS_EQUAL, constraint3a,"约束3a：极大性出自V_1");
+            }
+
+            // 约束3b：满足极大性则邻点无0
+            // sum_{u\in N(v)}(x0_u) <= (1-y_v)deg(v) for v in V
+                /*
+                    y_v=1时，右侧为0，强制所有邻点x0_u = 0
+                    y_v=0时，约束相当于没有
+                 */
+            for (int v = 0; v < numVertices; v++) {
+                GRBLinExpr constraint3b = new GRBLinExpr();
+
+                int deg_v=0;//v的度
+                for (int u = 0; u < numVertices; u++) {
+                    if (adjMatrix.get(v).get(u) == 1) {
+                        constraint3b.addTerm(1.0, x[u][0]);
+                        deg_v++;
+                    }
+                }
+                constraint3b.addTerm(deg_v,y[v]);
+                model.addConstr(constraint3b, GRB.LESS_EQUAL, deg_v,"约束3b：满足极大性则邻点无0");
+
+            }
+            // 约束3c：满足极大性的全部标记y_v=1
+            // y_v >= x1_v - sum_{u\in N(v)}(x0_u) for v in V
+                    /*
+                        当且仅当 x1_v=1且所有邻点x_0u = 0才有y_v=1
+                        其他情况需与约束3a、3b配合，实现自动取0
+                     */
+            for (int v = 0; v < numVertices; v++) {
+                GRBLinExpr constraint3c = new GRBLinExpr();
+
+                constraint3c.addTerm(1,y[v]);
+
+                for (int u = 0; u < numVertices; u++) {
+                    if (adjMatrix.get(v).get(u) == 1) {
+                        constraint3c.addTerm(1.0, x[u][0]);
+                    }
+                }
+
+                constraint3c.addTerm(-1,x[v][1]);
+
+                model.addConstr(constraint3c, GRB.GREATER_EQUAL, 0,"约束3c：满足极大性的全部标记y_v=1");
+
+            }
+
+            // 约束4:至少一个点满足极大性
+            // sum(y_v) >= 1
+
+            GRBLinExpr constraint4 = new GRBLinExpr();
+            for (int i = 0; i < numVertices; i++) {
+                constraint4.addTerm(1.0, y[i]);
+            }
+            model.addConstr(constraint4, GRB.GREATER_EQUAL, 1,"约束4:至少一个点满足极大性");
+
+            // 目标函数：最小化赋值总和
+            GRBLinExpr objective = new GRBLinExpr();
+            for (int v = 0; v < numVertices; v++) {
+                objective.addTerm(0.0, x[v][0]);
+                objective.addTerm(1.0, x[v][1]);
+                objective.addTerm(2.0, x[v][2]);
+            }
+            model.setObjective(objective, GRB.MINIMIZE);
+
+            // 优化模型
+            model.optimize();
+
+
+            /*输出结果*/
+            //ILP计算结果
+            int ILPCount=0;
+            for (int v = 0; v < numVertices; v++) {
+                ILPCount+= (int)x[v][1].get(GRB.DoubleAttr.X) + (int)x[v][2].get(GRB.DoubleAttr.X)*2;
+            }
+            System.out.print("gurobi 计算结果是 " + ILPCount+ "\t");
+            double runtimeInSeconds = model.get(GRB.DoubleAttr.Runtime);
+            long runtimeInMicroseconds = (long)(runtimeInSeconds * 1_000_000);
+            System.out.print("Runtime: " + runtimeInMicroseconds + " μs" + "\t");
+
+
+            //近似算法计算结果
+            //调用近似算法
+            ThresholdMRDF thresholdMRDF = SpringContextUtil.getBean(ThresholdMRDF.class);
+            int result = thresholdMRDF.ThresholdSolve(graph);
+            System.out.print("线性算法顶点赋值总成本: " + result + "\t");
+
+            //结果对比
+            Boolean flag= result==ILPCount;
+            if (flag)  System.out.println("TRUE");
+            else System.out.println("FALSE");
+
+
+            // 创建文件对象
+            File file = new File(resultFileName);
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file,true)); // true 表示追加模式
+
+            if (file.exists()) {
+                writer.newLine(); // 文件已存在时，换行再追加内容
+            }
+
+            writer.write("图的类型为：" + graph.getGraphType() + "; 顶点数为 " + graph.getV()  + "\t ");
+            writer.newLine();  // 换行
+
+            writer.write("gurobi 计算结果是 " + ILPCount + "\t " +
+                            "线性算法计算结果是: " + result + "\t " +
+                            "结果一致性" + flag  + "\t " +
+                            "gurobi运行时间" + runtimeInMicroseconds + " μs" + "\t"
+            );
 
 
 
